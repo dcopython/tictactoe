@@ -1,0 +1,9 @@
+#gamewin-container {
+    display: none;
+    position: fixed;
+    left: 45%;
+    top: 5%;
+    z-index: 10;
+    width: 400px;
+    height: 400px;
+}

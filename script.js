@@ -1,7 +1,7 @@
 const gameBoard = (() => {
     let gameBoard = [
-        ["_","_","_"],
-        ["X","O","X"],
+        ["_","X","X"],
+        ["X","O","O"],
         ["O","X","X"]
     ];
 
@@ -126,14 +126,41 @@ const game = (() => {
         // assign the starting player when the game starts
     }
 
-    const endGame = () => {
-        gameBoard.gameMessage().innerHTML = `${players.playerTurn().name} WINS!!!`;
+    const restartGame = () => {
+        //run when user hits play another game
+        closeWinMsg();
+    }
+
+    const endGame = (gameResult) => {
+        if (gameResult == "tie") {
+            document.getElementById("gamewin-header").innerHTML = "TIE GAME!"
+        }
+        else {
+            document.getElementById("gamewin-header").innerHTML = `${players.playerTurn().name} WINS!`
+        }
+        
+        const openWinMsg = () => {
+            document.getElementById("gamewin-container").style.display = "block";
+        }
+
+        const closeWinMsg = () => {
+            document.getElementById("gamewin-container").style.display = "none";
+        }
+
+        openWinMsg();
+        return closeWinMsg;
     }
 
     const checkWin = () => {
-        getRowMarkers()
-        getColMarkers()
-        getDiagMarkers()
+        if (getRowMarkers()) {
+            endGame("win");
+        }
+        getColMarkers();
+        //getDiagMarkers()
+        
+        // if (checkForTie()) {
+        //     endGame("tie");
+        // }
     }
 
     const evalResults = (result) => {  
@@ -141,13 +168,15 @@ const game = (() => {
             result.forEach((arr) => { 
                 if (arr.every((v) => {return v == arr[0]})) {
                     console.log("COL WIN")
-
+                    endGame("win");
                 }
             })
         }
         else { // check for row/diag win if result contains strings
             if (result.every((v) => {return v == result[0]})) {
                 console.log("ROW OR DIAG WIN");
+                //endGame("win");
+                return "win";
             }
         }
     }
@@ -161,7 +190,8 @@ const game = (() => {
                 return (text == "X" || text == "O" || text == "_")
             })
             
-            evalResults(results);
+            if (evalResults(results) == "win") {
+            }
         })
     }
 
@@ -179,7 +209,7 @@ const game = (() => {
             results.push(r); //contains all three columns in one array
         }
 
-        evalResults(results);
+        evalResults(results)
         //console.log(results);
     }
 
@@ -210,6 +240,21 @@ const game = (() => {
 
         leftToRight();
         rightToLeft();
+    }
+
+    //check for tie
+    const checkForTie = () => {
+        //if there's no more empty spots, end the game with a tie
+        const allspots = [...document.querySelectorAll(".game-cols")].filter((spot) => {
+            if (spot.innerText == "_") {
+                return spot;
+            }
+        })
+
+        if (allspots.length == 0) {
+            console.log("TIE");
+            return true;
+        }
     }
 
     return {
