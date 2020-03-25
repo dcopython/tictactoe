@@ -1,8 +1,8 @@
 const gameBoard = (() => {
     let gameBoard = [
-        ["_","X","X"],
-        ["X","O","O"],
-        ["O","X","X"]
+        ["O","X","O"],
+        ["O","X","_"],
+        ["X","O","X"]
     ];
 
     const createGameBoard = (board) => {
@@ -50,6 +50,7 @@ const gameBoard = (() => {
         return msg;
     }
 
+    //MOVE TO START GAME
     createGameBoard(gameBoard);
 
     return {
@@ -69,18 +70,30 @@ const players = (() => {
     const _createPlayers = () => {
         const playerNames = document.querySelectorAll(".forminputs");
 
-        // const playerOne = player(playerNames[0].value);
-        // const playerTwo = player(playerNames[1].value);
+        //const nameOne = player(playerNames[0].value);
+        //const nameTwo = player(playerNames[1].value);
 
-        // const startingTurn = Math.round(Math.random()); // randomly pick a player to start
-        let startingTurn = 0; // randomly pick a player to start
+        const nameOne = "DAN";
+        const nameTwo = "BOT";
 
+        // randomly pick a player to start
+        let startingTurn = Math.round(Math.random());
         startingTurn = startingTurn == 0 ? true : false;
 
-        return startingTurn;
+        const playerOne = player(nameOne, "X", startingTurn);
+        const playerTwo = player(nameTwo, "O", !startingTurn)
+        
+        return {
+            playerOne,
+            playerTwo
+        }
     }
 
+    //console.log(_createPlayers());
+
     const playerTurn = () => {
+        _createPlayers();
+
         let currentPlayer;
 
         if (playerOne.turn == true) {
@@ -106,15 +119,13 @@ const players = (() => {
         }
     }
 
-    // TEST PLAYERS
-    const playerOne = player("DAN", "X", _createPlayers())
-    const playerTwo = player("BOT", "O", !(_createPlayers()))
+    // create players
+    // const playerOne = player(_createPlayers().playerOne.name, _createPlayers().playerOne.marker, _createPlayers().playerOne.turn);
+    // const playerTwo = player(_createPlayers().playerTwo.name, _createPlayers().playerTwo.marker, _createPlayers().playerTwo.turn);
 
-    playerTurn();
+    //playerTurn(); //MOVED TO START GAME FUNCTION
 
     return {
-        playerOne,
-        playerTwo,
         playerTurn: playerTurn,
         changePlayerTurn: changePlayerTurn
     }
@@ -123,7 +134,7 @@ const players = (() => {
 
 const game = (() => {
     const startGame = () => {
-        // assign the starting player when the game starts
+        players.playerTurn();
     }
 
     const restartGame = () => {
@@ -152,31 +163,12 @@ const game = (() => {
     }
 
     const checkWin = () => {
-        if (getRowMarkers()) {
+        if (getRowMarkers() == true || getColMarkers() == true || getDiagMarkers() == true) {
             endGame("win");
         }
-        getColMarkers();
-        //getDiagMarkers()
-        
-        // if (checkForTie()) {
-        //     endGame("tie");
-        // }
-    }
-
-    const evalResults = (result) => {  
-        if (result.every((x) => {return Array.isArray(x)})) { // check for column win if result contains three arrays
-            result.forEach((arr) => { 
-                if (arr.every((v) => {return v == arr[0]})) {
-                    console.log("COL WIN")
-                    endGame("win");
-                }
-            })
-        }
-        else { // check for row/diag win if result contains strings
-            if (result.every((v) => {return v == result[0]})) {
-                console.log("ROW OR DIAG WIN");
-                //endGame("win");
-                return "win";
+        else {
+            if (checkForTie()) {
+                endGame("tie");
             }
         }
     }
@@ -185,14 +177,16 @@ const game = (() => {
     const getRowMarkers = () => {
         let rows = document.querySelectorAll(".game-rows");
 
-        rows.forEach((row) => {
+        for (let row of rows) {
             const results = [...row.innerText].filter((text) => {
                 return (text == "X" || text == "O" || text == "_")
             })
-            
-            if (evalResults(results) == "win") {
+
+            if (results.every((v) => {return v == results[0]})) {
+                console.log("ROW WIN");
+                return true;
             }
-        })
+        }
     }
 
     // evaluate columns each turn
@@ -202,15 +196,21 @@ const game = (() => {
         for (i = 0; i < 3; i++) {
             let r = [];
             let cols = document.querySelectorAll(`#game-col${i}`);
-            cols.forEach((col) => {
+            for (let col of cols) {
                 r.push(col.innerText);
-                
-            })
+            }
             results.push(r); //contains all three columns in one array
         }
-
-        evalResults(results)
         //console.log(results);
+
+        if (results.every((x) => {return Array.isArray(x)})) {
+            for (let arr of results) {
+                if (arr.every((v) => {return v == arr[0]})) {
+                    console.log("COL WIN")
+                    return true;
+                }
+            }
+        }
     }
 
     // check for diagonal wins
@@ -221,8 +221,13 @@ const game = (() => {
                 let rowCol = document.querySelector(`#game-row${i} #game-col${i}`)
                 results.push(rowCol.innerText);
             }
-            evalResults(results);
+
             //console.log(results)
+
+            if (results.every((v) => {return v == results[0]})) {
+                console.log("DIAG WIN");
+                return true;
+            }
         }
         
         const rightToLeft = () => {
@@ -234,12 +239,19 @@ const game = (() => {
 
                 count--;
             }
-            evalResults(results);
+            
             //console.log(results);
+
+            if (results.every((v) => {return v == results[0]})) {
+                console.log("DIAG WIN");
+                return true;
+            }
         }
 
-        leftToRight();
-        rightToLeft();
+        return {
+            leftToRight: leftToRight(),
+            rightToLeft: rightToLeft()
+        }
     }
 
     //check for tie
@@ -257,10 +269,11 @@ const game = (() => {
         }
     }
 
+    //start button logic
+    document.getElementById("start").addEventListener("click", startGame);
+    
     return {
-        checkWin: checkWin
+        checkWin: checkWin,
     }
 
 })();
-
-//FIGURE OUT HOW TO FLAG END OF GAME
