@@ -1,8 +1,8 @@
 const gameBoard = (() => {
-    let gameBoard = [
+    let board = [
         ["O","X","O"],
         ["O","X","_"],
-        ["X","O","X"]
+        ["X","O","_"]
     ];
 
     const createGameBoard = (board) => {
@@ -51,15 +51,19 @@ const gameBoard = (() => {
     }
 
     //MOVE TO START GAME
-    createGameBoard(gameBoard);
+    createGameBoard(board);
 
     return {
-        gameMessage: gameMessage
+        gameMessage: gameMessage,
+        createGameBoard: createGameBoard.bind(board)
     };
 
 })();
 
 const players = (() => {
+    let playerOne;
+    let playerTwo;
+
     const player = (name, marker, turn) => {
         name,
         marker,
@@ -67,21 +71,19 @@ const players = (() => {
         return {name, marker, turn}
     };
     
-    const _createPlayers = () => {
+    const createPlayers = () => {
         const playerNames = document.querySelectorAll(".forminputs");
 
-        //const nameOne = player(playerNames[0].value);
-        //const nameTwo = player(playerNames[1].value);
-
-        const nameOne = "DAN";
-        const nameTwo = "BOT";
+        const nameOne = playerNames[0].value;
+        const nameTwo = playerNames[1].value;
 
         // randomly pick a player to start
         let startingTurn = Math.round(Math.random());
         startingTurn = startingTurn == 0 ? true : false;
 
-        const playerOne = player(nameOne, "X", startingTurn);
-        const playerTwo = player(nameTwo, "O", !startingTurn)
+        // create player objects
+        playerOne = player(nameOne, "X", startingTurn)
+        playerTwo = player(nameTwo, "O", !startingTurn)
         
         return {
             playerOne,
@@ -89,13 +91,9 @@ const players = (() => {
         }
     }
 
-    //console.log(_createPlayers());
-
-    const playerTurn = () => {
-        _createPlayers();
-
+    const playerTurn = () => {     
         let currentPlayer;
-
+  
         if (playerOne.turn == true) {
             currentPlayer = playerOne;
         }
@@ -109,23 +107,20 @@ const players = (() => {
 
     const changePlayerTurn = (player) => {
         player.turn = false;
-        if (player == playerOne) {
+        if (player == playerOne) { //FIX REFERENCE
             playerTwo.turn = true;
             gameBoard.gameMessage().innerHTML = `${playerTwo.name}'s (${playerTwo.marker}) Turn`;
         }
         else {
-            playerOne.turn = true;
+            playerOne.turn = true; //FIX REFERENCE
             gameBoard.gameMessage().innerHTML = `${playerOne.name}'s (${playerOne.marker}) Turn`;
         }
     }
 
-    // create players
-    // const playerOne = player(_createPlayers().playerOne.name, _createPlayers().playerOne.marker, _createPlayers().playerOne.turn);
-    // const playerTwo = player(_createPlayers().playerTwo.name, _createPlayers().playerTwo.marker, _createPlayers().playerTwo.turn);
-
     //playerTurn(); //MOVED TO START GAME FUNCTION
 
     return {
+        createPlayers: createPlayers,
         playerTurn: playerTurn,
         changePlayerTurn: changePlayerTurn
     }
@@ -134,12 +129,17 @@ const players = (() => {
 
 const game = (() => {
     const startGame = () => {
+        players.createPlayers();
         players.playerTurn();
     }
 
     const restartGame = () => {
         //run when user hits play another game
         closeWinMsg();
+        //clear board
+        gameBoard.createGameBoard();
+        players.createPlayers();
+        players.playerTurn();
     }
 
     const endGame = (gameResult) => {
@@ -269,8 +269,15 @@ const game = (() => {
         }
     }
 
+    const closeWinMsg = () => {
+        document.getElementById("gamewin-container").style.display = "none";
+    }
+
     //start button logic
     document.getElementById("start").addEventListener("click", startGame);
+
+    //restart button logic
+    document.getElementById("reset").addEventListener("click", restartGame);
     
     return {
         checkWin: checkWin,
