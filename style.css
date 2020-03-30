@@ -1,9 +1,129 @@
+#game-container {
+    position: fixed;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 500px;
+    height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 100px;
+    z-index: 1;
+}
+
+.game-cols {
+    text-align: center;
+}
+
+#game-table {
+    height: 500px;
+    width: 500px;
+}
+
 #gamewin-container {
     display: none;
     position: fixed;
-    left: 45%;
-    top: 5%;
+    left: 0;
+    top: 0;
     z-index: 10;
+    width: 420px;
+    height: 450px;
+    margin: auto;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    text-align: center;
+    border: 2px black solid;
+    line-height: 200px;
+}
+
+#gamewin-header {
+    font-size: 60px;
+    margin-bottom: -10px;
+}
+
+#game-messages {
+    text-align: center;
+    margin-top: 5%;
+    font-size: 25px;
+}
+
+#reset {
+    width: 300px;
+    height: 75px;
+    font-size: 29px;
+}
+
+#form-container {
+    display: block;
+    position: fixed;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     width: 400px;
-    height: 400px;
+    height: 450px;
+    z-index: 10;
+    background-color: white;
+}
+
+#form {
+    border: 2px solid black;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.forminputs {
+    display: flex;
+    height: 40px;
+    font-size: 25px;
+    width: 365px;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#formplayerone {
+    margin-bottom: 20px;
+}
+
+#formplayertwo {
+    
+}
+
+#form h2 {
+    text-align: center;
+}
+
+#form h3 {
+    text-align: center;
+    text-decoration: underline;
+    margin-bottom: 50px;
+}
+
+.formbuttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+#start {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+    width: 300px;
+    height: 75px;
+    font-size: 45px;
+    font-weight: bold;
+    
 }
